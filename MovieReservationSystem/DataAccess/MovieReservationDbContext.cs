@@ -33,6 +33,11 @@ namespace MovieReservationSystem.DataAccess
 				.HasOne(r => r.Seat)
 				.WithMany(s => s.Reservations)
 				.HasForeignKey(r => r.SeatId);
+
+			modelBuilder.Entity<SeatModel>()
+				.HasOne(s => s.Showtime)
+				.WithMany(s => s.Seats)
+				.HasForeignKey(s => s.ShowtimeId);
 		}
 	}
 }

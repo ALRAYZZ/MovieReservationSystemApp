@@ -66,15 +66,35 @@ namespace MovieReservationSystem.Services
 				.ToList();
 		}
 
-		public int GetTheaterCapacity()
+		public bool CreateReservation(int showtimeId, int seatId)
 		{
-			return _dbContext.Seats.Count();
+			int userId = _roleService.GetUserId();
+			var showtime = _dbContext.Showtimes.SingleOrDefault(s => s.Id == showtimeId);
+			var seat = _dbContext.Seats.SingleOrDefault(s => s.Id == seatId && !s.IsReserved);
+
+			if (showtime == null || seat == null)
+			{
+				return false; // Showtime or seat not found
+			}
+
+			var reservation = new ReservationModel()
+			{
+				UserId = userId,
+				ShowtimeId = showtimeId,
+				SeatId = seatId,
+				ReservationTime = DateTime.Now,
+				ReservationCode = Guid.NewGuid().ToString(),
+				Status = "Confirmed"
+			};
+
+			seat.IsReserved = true;
+			seat.Reservation = reservation;
+
+			_dbContext.Reservations.Add(reservation);
+			_dbContext.SaveChanges();
+			return true;
 		}
 
-		public int GetReservedSeatsCount()
-		{
-			return _dbContext.Reservations.Count(s => s.Status == "Confirmed");
-		}
 		public decimal GetTotalRevenue()
 		{
 			if (!_roleService.IsAdmin())
@@ -82,7 +102,8 @@ namespace MovieReservationSystem.Services
 				throw new UnauthorizedAccessException("You are not authorized to view total revenue");
 			}
 			decimal ticketPrice = _config.GetValue<decimal>("TicketPrice");
-			return _dbContext.Reservations.Count(s => s.Status == "Confirmed") * ticketPrice;
+			return _dbContext.Reservations
+				.Count(r => r.Status == "Confirmed") * ticketPrice;
 		}
 	}
 }

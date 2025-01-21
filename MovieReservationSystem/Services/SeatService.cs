@@ -14,8 +14,9 @@ namespace MovieReservationSystem.Services
 
 		public List<SeatModel> GetAvailableSeatsForShowTime(int showtimeId)
 		{
-			return _dbContext.Seats
-				.Where(s => s.ShowtimeId == showtimeId && !s.IsReserved)
+			return _dbContext.ShowtimeSeats
+				.Where(ss => ss.ShowtimeId == showtimeId && !ss.Seat.IsReserved)
+				.Select(ss => ss.Seat)
 				.ToList();
 		}
 		public int GetTheaterCapacity()
@@ -23,9 +24,9 @@ namespace MovieReservationSystem.Services
 			return _dbContext.Seats.Count();
 		}
 
-		public int GetReservedSeatsCount()
+		public int GetReservedSeatsCount(int showtimeId)
 		{
-			return _dbContext.Reservations.Count(s => s.Status == "Confirmed");
+			return _dbContext.ShowtimeSeats.Count(ss => ss.ShowtimeId == showtimeId && ss.IsReserved);
 		}
 	}
 }

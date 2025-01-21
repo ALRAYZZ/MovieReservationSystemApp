@@ -13,11 +13,11 @@ namespace MovieReservationSystem.Services
 			_dbContext=dbContext;
 		}
 
-		public List<MovieModel> getMoviesWithShowtimesForDate(DateTime date)
+		public List<MovieModel> GetMoviesWithShowtimesForDate(DateTime date)
 		{
 			return _dbContext.Movies
 				.Include(m => m.Showtimes)
-				.ThenInclude(s => s.Seats)
+				.ThenInclude(s => s.ShowtimeSeats)
 				.Where(m => m.Showtimes.Any(s => s.StartTime.Date == date))
 				.ToList();
 		}

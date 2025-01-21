@@ -12,7 +12,7 @@
 		// Navigation properties
 		public UserModel User { get; set; }
 		public ShowtimeModel Showtime { get; set; }
-		public SeatModel Seat { get; set; }
+		public SeatModel Seat {get; set; }
 
 		// Reservation details
 		public DateTime ReservationTime { get; set; }

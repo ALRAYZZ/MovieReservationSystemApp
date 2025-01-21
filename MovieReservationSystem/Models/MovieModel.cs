@@ -7,6 +7,7 @@
 		public string Description { get; set; }
 		public string PosterImage { get; set; }
 		public GenreModel Genre { get; set; }
+		public int GenreId { get; set; }
 		public List<ShowtimeModel> Showtimes { get; set; }
 	}
 }

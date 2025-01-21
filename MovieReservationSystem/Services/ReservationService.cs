@@ -1,6 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using MovieReservationSystem.DataAccess;
 using MovieReservationSystem.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MovieReservationSystem.Services
 {
@@ -16,7 +20,6 @@ namespace MovieReservationSystem.Services
 			_dbContext = dbContext;
 			_config = config;
 		}
-
 
 		public List<ReservationModel> GetUserReservations(UserModel user)
 		{
@@ -36,17 +39,24 @@ namespace MovieReservationSystem.Services
 		{
 			int userId = _roleService.GetUserId();
 			var reservation = _dbContext.Reservations
+				.Include(r => r.Showtime)
 				.Include(r => r.Seat)
 				.SingleOrDefault(r => r.Id == reservationId && r.UserId == userId);
-			
+
 			if (reservation == null || reservation.Showtime.StartTime <= DateTime.Now)
 			{
 				return false; // Reservation not found or showtime has already started
 			}
 
+			var showtimeSeat = _dbContext.ShowtimeSeats
+				.SingleOrDefault(ss => ss.ShowtimeId == reservation.ShowtimeId && ss.SeatId == reservation.SeatId);
+
+			if (showtimeSeat != null)
+			{
+				showtimeSeat.IsReserved = false;
+			}
+
 			reservation.Status = "Cancelled";
-			reservation.Seat.IsReserved = false;
-			reservation.Seat.Reservation = null;
 			_dbContext.Reservations.Update(reservation);
 			_dbContext.SaveChanges();
 			return true;
@@ -69,12 +79,12 @@ namespace MovieReservationSystem.Services
 		public bool CreateReservation(int showtimeId, int seatId)
 		{
 			int userId = _roleService.GetUserId();
-			var showtime = _dbContext.Showtimes.SingleOrDefault(s => s.Id == showtimeId);
-			var seat = _dbContext.Seats.SingleOrDefault(s => s.Id == seatId && !s.IsReserved);
+			var showtimeSeat = _dbContext.ShowtimeSeats
+				.SingleOrDefault(ss => ss.ShowtimeId == showtimeId && ss.SeatId == seatId && !ss.IsReserved);
 
-			if (showtime == null || seat == null)
+			if (showtimeSeat == null)
 			{
-				return false; // Showtime or seat not found
+				return false; // Showtime or seat not found or seat is already reserved
 			}
 
 			var reservation = new ReservationModel()
@@ -87,8 +97,7 @@ namespace MovieReservationSystem.Services
 				Status = "Confirmed"
 			};
 
-			seat.IsReserved = true;
-			seat.Reservation = reservation;
+			showtimeSeat.IsReserved = true;
 
 			_dbContext.Reservations.Add(reservation);
 			_dbContext.SaveChanges();
@@ -107,3 +116,4 @@ namespace MovieReservationSystem.Services
 		}
 	}
 }
+

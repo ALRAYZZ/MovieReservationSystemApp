@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieReservationSystem.DataAccess;
 
@@ -11,9 +12,11 @@ using MovieReservationSystem.DataAccess;
 namespace MovieReservationSystem.Migrations
 {
     [DbContext(typeof(MovieReservationDbContext))]
-    partial class MovieReservationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250121162053_HashPasswords")]
+    partial class HashPasswords
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

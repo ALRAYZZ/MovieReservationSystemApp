@@ -21,13 +21,10 @@ namespace MovieReservationSystem.Services
 			_config = config;
 		}
 
-		public List<ReservationModel> GetUserReservations(UserModel user)
+		public List<ReservationModel> GetUserReservations()
 		{
 			int userId = _roleService.GetUserId();
-			if (user.Id != userId)
-			{
-				throw new UnauthorizedAccessException("You are not authorized to view this user's reservations");
-			}
+
 			return _dbContext.Reservations
 				.Include(r => r.Showtime)
 				.Include(r => r.Seat)
@@ -76,11 +73,11 @@ namespace MovieReservationSystem.Services
 				.ToList();
 		}
 
-		public bool CreateReservation(int showtimeId, int seatId)
+		public bool CreateReservation(ReservationDTO reservationDto)
 		{
 			int userId = _roleService.GetUserId();
 			var showtimeSeat = _dbContext.ShowtimeSeats
-				.SingleOrDefault(ss => ss.ShowtimeId == showtimeId && ss.SeatId == seatId && !ss.IsReserved);
+				.SingleOrDefault(ss => ss.ShowtimeId == reservationDto.ShowtimeId && ss.SeatId == reservationDto.SeatId && !ss.IsReserved);
 
 			if (showtimeSeat == null)
 			{
@@ -90,8 +87,8 @@ namespace MovieReservationSystem.Services
 			var reservation = new ReservationModel()
 			{
 				UserId = userId,
-				ShowtimeId = showtimeId,
-				SeatId = seatId,
+				ShowtimeId = reservationDto.ShowtimeId,
+				SeatId = reservationDto.SeatId,
 				ReservationTime = DateTime.Now,
 				ReservationCode = Guid.NewGuid().ToString(),
 				Status = "Confirmed"

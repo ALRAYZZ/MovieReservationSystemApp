@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieReservationSystem.DataAccess;
 
@@ -11,9 +12,11 @@ using MovieReservationSystem.DataAccess;
 namespace MovieReservationSystem.Migrations
 {
     [DbContext(typeof(MovieReservationDbContext))]
-    partial class MovieReservationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250121142538_SeedUsers")]
+    partial class SeedUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -527,7 +530,7 @@ namespace MovieReservationSystem.Migrations
                             Id = 1,
                             Email = "admin@example.com",
                             Name = "Admin User",
-                            Password = "$2a$11$GhtbVptXh0i6yWo4A2SB.uc7ZpmZHOD7sUgi4s0NbG8TMRatmuC8y",
+                            Password = "admin",
                             Role = "Admin",
                             Username = "admin"
                         },
@@ -536,7 +539,7 @@ namespace MovieReservationSystem.Migrations
                             Id = 2,
                             Email = "user@example.com",
                             Name = "Regular User",
-                            Password = "$2a$11$4el6ajuECWSdJO8otbCOKuI57CzIVRyaOFz5H8e8cHAM5xcDE20Hu",
+                            Password = "user",
                             Role = "User",
                             Username = "user"
                         });

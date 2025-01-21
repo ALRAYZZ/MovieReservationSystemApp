@@ -124,7 +124,29 @@ namespace MovieReservationSystem.DataAccess
 				new ShowtimeSeat { ShowtimeId = 3, SeatId = 9, IsReserved = false },
 				new ShowtimeSeat { ShowtimeId = 3, SeatId = 10, IsReserved = false }
 			);
-		}
+
+			modelBuilder.Entity<UserModel>().HasData(
+				new UserModel()
+				{
+					Id = 1,
+					Name = "Admin User",
+					Username = "admin",
+					Password = BCrypt.Net.BCrypt.HashPassword("admin"),
+					Role = "Admin",
+					Email = "admin@example.com"
+				},
+				new UserModel()
+				{
+					Id = 2,
+					Name = "Regular User",
+					Username = "user",
+					Password = BCrypt.Net.BCrypt.HashPassword("user"),
+					Role = "User",
+					Email = "user@example.com"
+				}
+			);
+
+		}	
 	}
 }
 
